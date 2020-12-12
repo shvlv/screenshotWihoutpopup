@@ -2,19 +2,31 @@ const puppeteer = require("puppeteer");
 
 (async () => {
   const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+  const context = await browser.createIncognitoBrowserContext();
+  const page = await context.newPage();
+
   await page.setViewport({
     width: 1920,
     height: 1080,
     deviceScaleFactor: 1,
   });
+  const client = await page.target().createCDPSession();
+  await await client.send("Network.clearBrowserCookies");
   await page.goto(
-    "https://news.sky.com/story/brexit-britain-should-be-very-worried-about-no-deal-with-eu-ex-europol-chief-warns-12159138"
+    "https://www.politico.eu/article/us-regulator-authorizes-first-coronavirus-vaccine-for-emergency-use/",
+    {
+      waitUntil: "domcontentloaded",
+    }
   );
-  await page.$eval("button", async function (el) {
-    el.click();
-  });
 
-  await page.screenshot({ path: "skynews.png", fullPage: true });
+  console.log("trying to find button");
+  const buttons = await page.$x("//a[contains(., 'ccept')]");
+  console.log(buttons);
+  if (buttons.length > 0) {
+    console.log("found button");
+    await buttons[0].click();
+  }
+
+  await page.screenshot({ path: "politico.png", fullPage: true });
   await browser.close();
 })();
