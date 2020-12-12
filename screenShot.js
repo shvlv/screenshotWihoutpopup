@@ -13,9 +13,9 @@ const puppeteer = require("puppeteer");
   const client = await page.target().createCDPSession();
   await await client.send("Network.clearBrowserCookies");
   await page.goto(
-    "https://www.politico.eu/article/us-regulator-authorizes-first-coronavirus-vaccine-for-emergency-use/",
+    "https://www.rt.com/sport/509482-khabib-reaction-mcgregor-knockout-aldo/",
     {
-      waitUntil: "domcontentloaded",
+      waitUntil: "networkidle2",
     }
   );
 
@@ -27,6 +27,6 @@ const puppeteer = require("puppeteer");
     await buttons[0].click();
   }
 
-  await page.screenshot({ path: "politico.png", fullPage: true });
+  await page.screenshot({ path: "rt after.png", fullPage: true });
   await browser.close();
 })();
