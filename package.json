@@ -1,0 +1,11 @@
+{
+  "name": "screenCapture",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node screenShot.js"
+  },
+  "dependencies": {
+    "puppeteer": "^5.5.0"
+  }
+}
