@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer');
 
 /**
  *
@@ -19,45 +19,53 @@ let html = ['<ul>'];
     deviceScaleFactor: 1,
   });
 
-  data.map( async ({cappture, originalUrl}, index) => {
+  let index = 0;
+  for (const {cappture, originalUrl} of data) {
+    index++;
+
+    html.push('<li>',
+        `<p>Cappture: <a href="${cappture}">${cappture}</a></p>`,
+        `<p>Original URL: <a href="${originalUrl}">${originalUrl}</a></p>`,
+    );
     try {
       // cleaning cookies just in case we alredy accepted the use of cookies before
       const client = await page.target().createCDPSession();
-      await client.send("Network.clearBrowserCookies");
+      await client.send('Network.clearBrowserCookies');
       console.log(originalUrl);
 
       await page.goto(
           originalUrl,
           {
             //waiting until the page fully loades before doing anything
-            waitUntil: "domcontentloaded",
-          }
+            waitUntil: 'domcontentloaded',
+          },
       );
 
-      console.log("trying to find button");
+      console.log('trying to find button');
       //gree is the word in the popup Agree
-      const buttons = await page.$x("//a[contains(., 'gree')]");
+      const buttons = await page.$x('//a[contains(., \'gree\')]');
       console.log(buttons);
       if (buttons.length > 0) {
-        console.log("found button");
+        console.log('found button');
         await buttons[0].click();
       }
 
-      let imgPath = `res/${index}.png`;
-      await page.screenshot({path: imgPath, fullPage: true});
+      await page.screenshot({path: `res/${index}.png`, fullPage: true});
 
-      html.push('<li>',
-          `<p>Cappture: <a href="${cappture}">${cappture}</a></p>`,
-          `<p>Original URL: <a href="${originalUrl}">${originalUrl}</a></p>`,
-          `<p>ScreenshotWithoutPopup: <img src="${imgPath}" alt="ScreenshotWithoutPopup"></p>`,
+      html.push(
+          `<p>ScreenshotWithoutPopup: <a href="${index}.png"><img src="${index}.png" alt="ScreenshotWithoutPopup" width="300px"></a></p>`,
           `</li>`,
       );
     } catch (e) {
       console.log(originalUrl);
       console.log(e);
+      html.push(
+          `<p>ScreenshotWithoutPopup: ${e}</p>`,
+          `</li>`,
+      );
     }
 
-  });
+  }
 
   await browser.close();
 
